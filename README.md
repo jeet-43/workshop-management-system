@@ -1,8 +1,8 @@
 # Workshop Management System
 
-A command-line application written in Python to manage college workshops from start to finish, covering scheduling, participant registration, grading, and certificate generation.
+A command-line application written in Python for managing academic workshops, from scheduling and participant registration to grading and certificate generation.
 
-Built as a first year summer project to practise object-oriented Python.
+I built this as a summer project for my college, mainly to get more practice with object-oriented Python.
 
 ---
 
@@ -15,17 +15,16 @@ Built as a first year summer project to practise object-oriented Python.
 - [How to Use](#how-to-use)
 - [Project Structure](#project-structure)
 - [Sample Output](#sample-output)
-- [Planned Improvements](#planned-improvements)
 
 ---
 
 ## About
 
-Managing college workshops by hand means juggling spreadsheets, paper registers, and manually checking who paid, who attended, and who passed. This project replaces all of that with a simple menu-driven system that keeps everything in one place.
+Running an academic workshop by hand usually means juggling spreadsheets, paper registers, and manually tracking who paid, who showed up, and who passed. This project pulls all of that into one simple menu-driven system.
 
-There are two separate portals: one for the organizer who runs the workshop, and one for participants who register and collect their certificates. Data is saved to local text files in a readable, database-style layout, and is automatically loaded back in the next time the program runs.
+There are two portals: one for the organizer running the workshop, and one for participants registering and collecting their certificates. Data is saved to local text files in a readable, database-style layout, and it loads back in automatically the next time the program runs.
 
-The system is built around four classes — `Workshop`, `User`, `WorkshopManagement`, and `Report` — each responsible for one part of the system.
+The system is built around four classes: `Workshop`, `User`, `WorkshopManagement`, and `Report`, each handling one part of the system.
 
 ---
 
@@ -34,14 +33,14 @@ The system is built around four classes — `Workshop`, `User`, `WorkshopManagem
 ### Organizer Portal
 
 **Workshop Management**
-- Add workshops with name, date, instructor, department, capacity, and fee (with input validation for capacity and fee)
+- Add workshops with name, date, venue, instructor, department, capacity, and fee, with input validation for capacity and fee
 - View all workshops with live seat counts and current status
 - Update status: Upcoming, Ongoing, Completed, or Cancelled
 - Delete a workshop, with a confirmation prompt
 
 **Participant Management**
 - View all participants registered to a given workshop
-- Search participants by name, roll number, email, workshop ID, or department (partial and case-insensitive matching)
+- Search participants by name, roll number, email, workshop ID, or department, with partial and case-insensitive matching
 - Update payment status: Paid, Pending, or Waived
 - Mark attendance per workshop, one participant at a time
 - Cancel a registration, which frees up the seat on the workshop
@@ -53,17 +52,17 @@ The system is built around four classes — `Workshop`, `User`, `WorkshopManagem
 
 **Certificates**
 - Generate a certificate for any participant who passed
-- Each certificate gets a unique ID (e.g. `CERT-W1-P1`)
+- Each certificate gets a unique ID, e.g. `CERT-W1-P1`
 - View all issued certificates in one list
 
 **Reports**
-- Summary dashboard with workshop status breakdown (Upcoming/Ongoing/Completed/Cancelled) and participant breakdown (Registered/Cancelled/Paid/Present/Passed/Failed)
+- Summary dashboard with a workshop status breakdown (Upcoming/Ongoing/Completed/Cancelled) and a participant breakdown (Registered/Cancelled/Paid/Present/Passed/Failed)
 - Save all data to text files in a structured, human-readable format
 
 ### Participant Portal
 
 - Browse available workshops with seat availability and fees
-- Register for a workshop (checks for a full workshop, closed registration, and duplicate sign-ups)
+- Register for a workshop, with checks for a full workshop, closed registration, and duplicate sign-ups
 - View an assigned grade and result
 - Print a formatted certificate to the terminal
 - Verify any certificate by its ID
@@ -72,9 +71,9 @@ The system is built around four classes — `Workshop`, `User`, `WorkshopManagem
 
 ## Tech Stack
 
-- **Python 3** only — no external libraries or database required
+- **Python 3** only, no external libraries or database required
 
-Data persistence is handled with built-in file I/O, writing to structured `.txt` files that double as a simple flat-file database and are loaded back automatically on startup.
+Data persistence is handled with built-in file I/O, writing to structured `.txt` files that double as a simple flat-file database and load back automatically on startup.
 
 ---
 
@@ -82,7 +81,7 @@ Data persistence is handled with built-in file I/O, writing to structured `.txt`
 
 ### Requirements
 
-Just Python 3. No installation of extra packages is needed.
+Just Python 3. No extra packages to install.
 
 ### Running the App
 
@@ -137,6 +136,24 @@ Grade: A
 Certificate ID: CERT-W1-P1
 ```
 
+**Saved data file (`workshops.txt`):**
+
+```
+===== WORKSHOPS DATABASE =====
+
+Workshop ID : W1
+Name        : Python Basics
+Date        : 10/07/2026
+Venue       : Room 204, CS Block
+Instructor  : Alice
+Department  : CS
+Capacity    : 2
+Enrolled    : 1
+Fee         : 0.0
+Status      : Ongoing
+----------------------------------------
+```
+
 **Saved data file (`participants.txt`):**
 
 ```
@@ -156,17 +173,6 @@ Result         : Pass
 Certificate    : CERT-W1-P1
 ----------------------------------------
 ```
-
----
-
-## Planned Improvements
-
-- Grade distribution charts (pie/bar) using Matplotlib and NumPy
-- GUI using Tkinter
-- SQLite database instead of text files
-- Email notification on registration and certificate issue
-- PDF export for certificates
-- Password-protected organizer login
 
 ---
 
