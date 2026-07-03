@@ -12,6 +12,7 @@ class Workshop:
         wid = input("Enter Workshop ID: ")
         name = input("Workshop Name: ")
         date = input("Date (DD/MM/YYYY): ")
+        venue = input("Venue: ")
         instructor = input("Instructor Name: ")
         dept = input("Department: ")
 
@@ -37,6 +38,7 @@ class Workshop:
             "id": wid,
             "name": name,
             "date": date,
+            "venue": venue,
             "instructor": instructor,
             "department": dept,
             "capacity": capacity,
@@ -61,6 +63,7 @@ class Workshop:
                 print("\nWorkshop ID :", w["id"])
                 print("Name        :", w["name"])
                 print("Date        :", w["date"])
+                print("Venue       :", w["venue"])
                 print("Instructor  :", w["instructor"], "| Dept:", w["department"])
                 print("Seats       :", seats_left, "left out of", w["capacity"])
                 print("Fee         :", fee_str)
@@ -435,6 +438,7 @@ class WorkshopManagement:
             file1.write("Workshop ID : " + w["id"] + "\n")
             file1.write("Name        : " + w["name"] + "\n")
             file1.write("Date        : " + w["date"] + "\n")
+            file1.write("Venue       : " + w["venue"] + "\n")
             file1.write("Instructor  : " + w["instructor"] + "\n")
             file1.write("Department  : " + w["department"] + "\n")
             file1.write("Capacity    : " + str(w["capacity"]) + "\n")
@@ -479,6 +483,8 @@ class WorkshopManagement:
                     current["name"] = line.split(":", 1)[1].strip()
                 elif line.startswith("Date"):
                     current["date"] = line.split(":", 1)[1].strip()
+                elif line.startswith("Venue"):
+                    current["venue"] = line.split(":", 1)[1].strip()
                 elif line.startswith("Instructor"):
                     current["instructor"] = line.split(":", 1)[1].strip()
                 elif line.startswith("Department"):
