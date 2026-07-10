@@ -22,9 +22,9 @@ I built this as a summer project for my college, mainly to get more practice wit
 
 Running an academic workshop by hand usually means juggling spreadsheets, paper registers, and manually tracking who paid, who showed up, and who passed. This project pulls all of that into one simple menu-driven system.
 
-There are two portals: one for the organizer running the workshop, and one for participants registering and collecting their certificates. Data is saved to local text files in a readable, database-style layout, and it loads back in automatically the next time the program runs.
+There are two portals: one for the organizer running the workshop, and one for participants registering and collecting their certificates. Data is saved to a local file using Python's built-in `pickle` module, and it loads back in automatically the next time the program runs.
 
-The system is built around four classes: `Workshop`, `User`, `WorkshopManagement`, and `Report`, each handling one part of the system.
+The system is built around six classes. `WorkshopItem` and `Participant` just hold the data for a single workshop or participant. Then there are four manager classes that do the actual work: `Workshop` and `User` handle workshop and participant operations, `WorkshopManagement` handles the cross-cutting stuff like payments, attendance, grades, certificates, and saving/loading, and `Report` builds the summary dashboard.
 
 ---
 
@@ -39,10 +39,10 @@ The system is built around four classes: `Workshop`, `User`, `WorkshopManagement
 - Delete a workshop, with a confirmation prompt
 
 **Participant Management**
-- View all participants registered to a given workshop
-- Search participants by name, roll number, email, workshop ID, or department, with partial and case-insensitive matching
+- View all participants tied to a given workshop
+- Search participants by name, roll number, email, workshop ID, or department. Name, roll number, email, and department all do partial, case-insensitive matching; workshop ID needs an exact match
 - Update payment status: Paid, Pending, or Waived
-- Mark attendance per workshop, one participant at a time
+- Mark attendance for a workshop's registered participants, one participant at a time
 - Cancel a registration, which frees up the seat on the workshop
 
 **Grades**
@@ -57,7 +57,7 @@ The system is built around four classes: `Workshop`, `User`, `WorkshopManagement
 
 **Reports**
 - Summary dashboard with a workshop status breakdown (Upcoming/Ongoing/Completed/Cancelled) and a participant breakdown (Registered/Cancelled/Paid/Present/Passed/Failed)
-- Save all data to text files in a structured, human-readable format
+- Save all workshop and participant data to a single local file with Python's `pickle` module
 
 ### Participant Portal
 
@@ -73,7 +73,7 @@ The system is built around four classes: `Workshop`, `User`, `WorkshopManagement
 
 - **Python 3** only, no external libraries or database required
 
-Data persistence is handled with built-in file I/O, writing to structured `.txt` files that double as a simple flat-file database and load back automatically on startup.
+Data persistence is handled with Python's built-in `pickle` module. It serializes the workshop and participant objects to a single local file, `workshop_data.txt`, and loads them back automatically on startup.
 
 ---
 
@@ -89,7 +89,7 @@ Just Python 3. No extra packages to install.
 python workshop_management.py
 ```
 
-The program loads any existing data from `workshops.txt` and `participants.txt` automatically on startup, and can be saved at any time from the organizer menu.
+The program loads any existing data from `workshop_data.txt` automatically on startup, and can be saved at any time from the Organizer menu (option 14, Save Data).
 
 ---
 
@@ -105,10 +105,10 @@ When you run the program, you choose between the Organizer and Participant porta
 ```
 
 **Organizer flow:**
-Add a workshop, register participants, mark attendance after the session, enter grades, and generate certificates for those who passed. Use the search feature to quickly look up any participant by name, roll number, email, workshop, or department.
+Add a workshop first. Once participants have registered themselves through the Participant portal, mark attendance after the session, enter grades, and generate certificates for those who passed. Use the search feature to quickly look up any participant by name, roll number, email, workshop, or department.
 
 **Participant flow:**
-View available workshops, register, and once the organizer has generated a certificate, use the certificate ID to print or verify it.
+View available workshops, register, check your grade once it's assigned, and once the organizer has generated a certificate, use the certificate ID to print or verify it.
 
 ---
 
@@ -117,9 +117,8 @@ View available workshops, register, and once the organizer has generated a certi
 ```
 workshop-management-system/
 |
-|-- workshop_management.py   # All application logic (Workshop, User, WorkshopManagement, Report classes)
-|-- workshops.txt            # Auto-generated on save, auto-loaded on startup
-|-- participants.txt         # Auto-generated on save, auto-loaded on startup
+|-- workshop_management.py   # All application logic (WorkshopItem, Participant, Workshop, User, WorkshopManagement, Report classes)
+|-- workshop_data.txt        # Auto-generated on save (pickle format), auto-loaded on startup
 |-- README.md
 ```
 
@@ -136,43 +135,17 @@ Grade: A
 Certificate ID: CERT-W1-P1
 ```
 
-**Saved data file (`workshops.txt`):**
+**Saved data:**
 
-```
-===== WORKSHOPS DATABASE =====
+Data isn't written out as plain, human-readable text. The Organizer's "Save Data" option pickles the full list of workshop and participant objects into a single binary file, `workshop_data.txt`:
 
-Workshop ID : W1
-Name        : Python Basics
-Date        : 10/07/2026
-Venue       : Room 204, CS Block
-Instructor  : Alice
-Department  : CS
-Capacity    : 2
-Enrolled    : 1
-Fee         : 0.0
-Status      : Ongoing
-----------------------------------------
+```python
+with open("workshop_data.txt", "wb") as f:
+    pickle.dump(workshop.workshops, f)
+    pickle.dump(user.users, f)
 ```
 
-**Saved data file (`participants.txt`):**
-
-```
-===== PARTICIPANTS DATABASE =====
-
-Participant ID : P1
-Name           : John
-Email          : john@example.com
-Roll No        : CS101
-Department     : CS
-Workshop       : W1
-Payment        : Paid
-Attendance     : Present
-Status         : Registered
-Grade          : A
-Result         : Pass
-Certificate    : CERT-W1-P1
-----------------------------------------
-```
+Opening that file directly just shows raw binary data, not a formatted table. The program reads it back into memory automatically the next time it starts.
 
 ---
 
