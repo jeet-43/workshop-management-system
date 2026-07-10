@@ -1,10 +1,46 @@
+import pickle
+import os
+
+
+class WorkshopItem:
+    def __init__(self, wid, name, date, venue, instructor, dept, capacity, fee):
+        self.id = wid
+        self.name = name
+        self.date = date
+        self.venue = venue
+        self.instructor = instructor
+        self.department = dept
+        self.capacity = capacity
+        self.fee = fee
+        self.enrolled = 0
+        self.status = "Upcoming"
+
+
+class Participant:
+    def __init__(self, uid, name, email, roll_no, dept, year, workshop_id):
+        self.id = uid
+        self.name = name
+        self.email = email
+        self.roll_no = roll_no
+        self.department = dept
+        self.year = year
+        self.workshop = workshop_id
+        self.payment = "Pending"
+        self.attendance = "Absent"
+        self.status = "Registered"
+        self.score = None
+        self.grade = "Not Assigned"
+        self.result = "Not Assigned"
+        self.certificate = "Not Generated"
+
+
 class Workshop:
     def __init__(self):
         self.workshops = []
 
     def find_workshop(self, wid):
         for w in self.workshops:
-            if w["id"] == wid:
+            if w.id == wid:
                 return w
         return None
 
@@ -34,19 +70,7 @@ class Workshop:
             except ValueError:
                 print("Please enter a valid number.")
 
-        new_workshop = {
-            "id": wid,
-            "name": name,
-            "date": date,
-            "venue": venue,
-            "instructor": instructor,
-            "department": dept,
-            "capacity": capacity,
-            "fee": fee,
-            "enrolled": 0,
-            "status": "Upcoming"
-        }
-
+        new_workshop = WorkshopItem(wid, name, date, venue, instructor, dept, capacity, fee)
         self.workshops.append(new_workshop)
         print("Workshop Added Successfully")
 
@@ -55,26 +79,26 @@ class Workshop:
             print("No workshops available")
         else:
             for w in self.workshops:
-                if w["fee"] == 0:
+                if w.fee == 0:
                     fee_str = "Free"
                 else:
-                    fee_str = "Rs." + str(w["fee"])
-                seats_left = w["capacity"] - w["enrolled"]
-                print("\nWorkshop ID :", w["id"])
-                print("Name        :", w["name"])
-                print("Date        :", w["date"])
-                print("Venue       :", w["venue"])
-                print("Instructor  :", w["instructor"], "| Dept:", w["department"])
-                print("Seats       :", seats_left, "left out of", w["capacity"])
+                    fee_str = "Rs." + str(w.fee)
+                seats_left = w.capacity - w.enrolled
+                print("\nWorkshop ID :", w.id)
+                print("Name        :", w.name)
+                print("Date        :", w.date)
+                print("Venue       :", w.venue)
+                print("Instructor  :", w.instructor, "| Dept:", w.department)
+                print("Seats       :", seats_left, "left out of", w.capacity)
                 print("Fee         :", fee_str)
-                print("Status      :", w["status"])
+                print("Status      :", w.status)
 
     def update_status(self):
         wid = input("Enter Workshop ID: ")
         w = self.find_workshop(wid)
 
         if w is not None:
-            print("Current Status:", w["status"])
+            print("Current Status:", w.status)
             print("1. Upcoming")
             print("2. Ongoing")
             print("3. Completed")
@@ -82,18 +106,18 @@ class Workshop:
             choice = input("Choose new status: ")
 
             if choice == "1":
-                w["status"] = "Upcoming"
+                w.status = "Upcoming"
             elif choice == "2":
-                w["status"] = "Ongoing"
+                w.status = "Ongoing"
             elif choice == "3":
-                w["status"] = "Completed"
+                w.status = "Completed"
             elif choice == "4":
-                w["status"] = "Cancelled"
+                w.status = "Cancelled"
             else:
                 print("Invalid Choice")
                 return
 
-            print("Status updated to:", w["status"])
+            print("Status updated to:", w.status)
         else:
             print("Workshop Not Found")
 
@@ -118,7 +142,7 @@ class User:
 
     def find_user(self, uid):
         for p in self.users:
-            if p["id"] == uid:
+            if p.id == uid:
                 return p
         return None
 
@@ -137,41 +161,25 @@ class User:
             print("Workshop Not Found")
             return
 
-        if w["status"] != "Upcoming" and w["status"] != "Ongoing":
+        if w.status != "Upcoming" and w.status != "Ongoing":
             print("Registration is closed for this workshop")
             return
 
-        if w["enrolled"] >= w["capacity"]:
+        if w.enrolled >= w.capacity:
             print("Sorry, this workshop is full")
             return
 
         for p in self.users:
-            if p["email"] == email and p["workshop"] == wid and p["status"] == "Registered":
+            if p.email == email and p.workshop == wid and p.status == "Registered":
                 print("You have already registered for this workshop")
                 return
 
-        new_user = {
-            "id": uid,
-            "name": name,
-            "email": email,
-            "roll_no": roll_no,
-            "department": dept,
-            "year": year,
-            "workshop": wid,
-            "payment": "Pending",
-            "attendance": "Absent",
-            "status": "Registered",
-            "score": None,
-            "grade": "Not Assigned",
-            "result": "Not Assigned",
-            "certificate": "Not Generated"
-        }
-
+        new_user = Participant(uid, name, email, roll_no, dept, year, wid)
         self.users.append(new_user)
-        w["enrolled"] += 1
+        w.enrolled += 1
         print("Registration Confirmed")
-        if w["fee"] > 0:
-            print("Fee due: Rs." + str(w["fee"]) + " | Payment: Pending")
+        if w.fee > 0:
+            print("Fee due: Rs." + str(w.fee) + " | Payment: Pending")
 
     def search(self):
         print("Search by:")
@@ -187,27 +195,27 @@ class User:
         if choice == "1":
             keyword = input("Enter Name: ").lower()
             for p in self.users:
-                if keyword in p["name"].lower():
+                if keyword in p.name.lower():
                     results.append(p)
         elif choice == "2":
             keyword = input("Enter Roll Number: ").lower()
             for p in self.users:
-                if keyword in p["roll_no"].lower():
+                if keyword in p.roll_no.lower():
                     results.append(p)
         elif choice == "3":
             keyword = input("Enter Email: ").lower()
             for p in self.users:
-                if keyword in p["email"].lower():
+                if keyword in p.email.lower():
                     results.append(p)
         elif choice == "4":
             keyword = input("Enter Workshop ID: ")
             for p in self.users:
-                if p["workshop"] == keyword:
+                if p.workshop == keyword:
                     results.append(p)
         elif choice == "5":
             keyword = input("Enter Department: ").lower()
             for p in self.users:
-                if keyword in p["department"].lower():
+                if keyword in p.department.lower():
                     results.append(p)
         else:
             print("Invalid Choice")
@@ -219,12 +227,12 @@ class User:
 
         print(len(results), "result(s) found:")
         for p in results:
-            print("\nParticipant ID :", p["id"])
-            print("Name           :", p["name"])
-            print("Email          :", p["email"])
-            print("Roll No        :", p["roll_no"])
-            print("Workshop       :", p["workshop"])
-            print("Status         :", p["status"])
+            print("\nParticipant ID :", p.id)
+            print("Name           :", p.name)
+            print("Email          :", p.email)
+            print("Roll No        :", p.roll_no)
+            print("Workshop       :", p.workshop)
+            print("Status         :", p.status)
 
     def cancel_registration(self, workshop):
         uid = input("Enter Participant ID to cancel: ")
@@ -234,19 +242,19 @@ class User:
             print("Participant Not Found")
             return
 
-        if p["status"] == "Cancelled":
+        if p.status == "Cancelled":
             print("This registration is already cancelled")
             return
 
-        confirm = input("Cancel registration for " + p["name"] + "? (yes/no): ")
+        confirm = input("Cancel registration for " + p.name + "? (yes/no): ")
         if confirm.lower() != "yes":
             print("Cancellation Aborted")
             return
 
-        p["status"] = "Cancelled"
-        w = workshop.find_workshop(p["workshop"])
-        if w is not None and w["enrolled"] > 0:
-            w["enrolled"] -= 1
+        p.status = "Cancelled"
+        w = workshop.find_workshop(p.workshop)
+        if w is not None and w.enrolled > 0:
+            w.enrolled -= 1
         print("Registration Cancelled")
 
     def view_grades(self):
@@ -254,8 +262,8 @@ class User:
         p = self.find_user(uid)
 
         if p is not None:
-            print("Grade:", p["grade"])
-            print("Result:", p["result"])
+            print("Grade:", p.grade)
+            print("Result:", p.result)
         else:
             print("Participant Not Found")
 
@@ -264,13 +272,13 @@ class User:
         p = self.find_user(uid)
 
         if p is not None:
-            if p["certificate"] != "Not Generated":
+            if p.certificate != "Not Generated":
                 print("\n----- CERTIFICATE -----")
                 print("Certificate of Completion")
-                print("Presented to", p["name"])
-                print("Workshop ID:", p["workshop"])
-                print("Grade:", p["grade"])
-                print("Certificate ID:", p["certificate"])
+                print("Presented to", p.name)
+                print("Workshop ID:", p.workshop)
+                print("Grade:", p.grade)
+                print("Certificate ID:", p.certificate)
             else:
                 print("Certificate Not Generated")
         else:
@@ -280,10 +288,10 @@ class User:
         cert_id = input("Enter Certificate ID: ")
 
         for p in self.users:
-            if p["certificate"] == cert_id:
+            if p.certificate == cert_id:
                 print("Certificate Verified")
-                print("Issued to:", p["name"])
-                print("Grade:", p["grade"])
+                print("Issued to:", p.name)
+                print("Grade:", p.grade)
                 return
 
         print("Certificate Invalid")
@@ -298,8 +306,8 @@ class WorkshopManagement:
             print("\nParticipants:")
             found_any = False
             for p in user.users:
-                if p["workshop"] == wid:
-                    print(p["id"], "-", p["name"], "|", p["status"])
+                if p.workshop == wid:
+                    print(p.id, "-", p.name, "|", p.status)
                     found_any = True
             if not found_any:
                 print("No participants yet")
@@ -311,18 +319,18 @@ class WorkshopManagement:
         p = user.find_user(uid)
 
         if p is not None:
-            print("Current Payment:", p["payment"])
+            print("Current Payment:", p.payment)
             print("1. Paid")
             print("2. Pending")
             print("3. Waived")
             choice = input("Choose: ")
 
             if choice == "1":
-                p["payment"] = "Paid"
+                p.payment = "Paid"
             elif choice == "2":
-                p["payment"] = "Pending"
+                p.payment = "Pending"
             elif choice == "3":
-                p["payment"] = "Waived"
+                p.payment = "Waived"
             else:
                 print("Invalid Choice")
                 return
@@ -341,7 +349,7 @@ class WorkshopManagement:
 
         roster = []
         for p in user.users:
-            if p["workshop"] == wid and p["status"] == "Registered":
+            if p.workshop == wid and p.status == "Registered":
                 roster.append(p)
 
         if len(roster) == 0:
@@ -349,14 +357,14 @@ class WorkshopManagement:
             return
 
         for p in roster:
-            print("\n" + p["name"], "- Current:", p["attendance"])
+            print("\n" + p.name, "- Current:", p.attendance)
             print("1. Present")
             print("2. Absent")
             choice = input("Mark: ")
             if choice == "1":
-                p["attendance"] = "Present"
+                p.attendance = "Present"
             elif choice == "2":
-                p["attendance"] = "Absent"
+                p.attendance = "Absent"
             else:
                 print("Skipped")
 
@@ -370,7 +378,7 @@ class WorkshopManagement:
             print("Participant Not Found")
             return
 
-        if p["attendance"] != "Present":
+        if p.attendance != "Present":
             print("Participant must attend the workshop first")
             return
 
@@ -401,9 +409,9 @@ class WorkshopManagement:
         else:
             result = "Fail"
 
-        p["score"] = score
-        p["grade"] = grade
-        p["result"] = result
+        p.score = score
+        p.grade = grade
+        p.result = result
         print("Grade Saved:", grade, "(" + result + ")")
 
     def generate_certificate(self, user):
@@ -414,139 +422,42 @@ class WorkshopManagement:
             print("Participant Not Found")
             return
 
-        if p["result"] != "Pass":
+        if p.result != "Pass":
             print("Certificate can only be generated for participants who passed")
             return
 
-        cert_id = "CERT-" + p["workshop"] + "-" + p["id"]
-        p["certificate"] = cert_id
+        cert_id = "CERT-" + p.workshop + "-" + p.id
+        p.certificate = cert_id
         print("Certificate Generated:", cert_id)
 
     def view_certificates(self, user):
         found_any = False
         for p in user.users:
-            if p["certificate"] != "Not Generated":
-                print(p["certificate"], "-", p["name"])
+            if p.certificate != "Not Generated":
+                print(p.certificate, "-", p.name)
                 found_any = True
         if not found_any:
             print("No certificates issued yet")
 
     def save_data(self, workshop, user):
-        file1 = open("workshops.txt", "w")
-        file1.write("===== WORKSHOPS DATABASE =====\n\n")
-        for w in workshop.workshops:
-            file1.write("Workshop ID : " + w["id"] + "\n")
-            file1.write("Name        : " + w["name"] + "\n")
-            file1.write("Date        : " + w["date"] + "\n")
-            file1.write("Venue       : " + w["venue"] + "\n")
-            file1.write("Instructor  : " + w["instructor"] + "\n")
-            file1.write("Department  : " + w["department"] + "\n")
-            file1.write("Capacity    : " + str(w["capacity"]) + "\n")
-            file1.write("Enrolled    : " + str(w["enrolled"]) + "\n")
-            file1.write("Fee         : " + str(w["fee"]) + "\n")
-            file1.write("Status      : " + w["status"] + "\n")
-            file1.write("-" * 40 + "\n\n")
-        file1.close()
-
-        file2 = open("participants.txt", "w")
-        file2.write("===== PARTICIPANTS DATABASE =====\n\n")
-        for p in user.users:
-            file2.write("Participant ID : " + p["id"] + "\n")
-            file2.write("Name           : " + p["name"] + "\n")
-            file2.write("Email          : " + p["email"] + "\n")
-            file2.write("Roll No        : " + p["roll_no"] + "\n")
-            file2.write("Department     : " + p["department"] + "\n")
-            file2.write("Workshop       : " + p["workshop"] + "\n")
-            file2.write("Payment        : " + p["payment"] + "\n")
-            file2.write("Attendance     : " + p["attendance"] + "\n")
-            file2.write("Status         : " + p["status"] + "\n")
-            file2.write("Grade          : " + p["grade"] + "\n")
-            file2.write("Result         : " + p["result"] + "\n")
-            file2.write("Certificate    : " + p["certificate"] + "\n")
-            file2.write("-" * 40 + "\n\n")
-        file2.close()
-
+        with open("workshop_data.txt", "wb") as f:
+            pickle.dump(workshop.workshops, f)
+            pickle.dump(user.users, f)
         print("Data Saved Successfully")
 
     def load_data(self, workshop, user):
+        if not os.path.exists("workshop_data.txt"):
+            print("No saved data found. Starting fresh.")
+            return
+
         try:
-            file1 = open("workshops.txt", "r")
-            lines = file1.readlines()
-            file1.close()
-
-            current = {}
-            for line in lines:
-                line = line.strip()
-                if line.startswith("Workshop ID"):
-                    current["id"] = line.split(":", 1)[1].strip()
-                elif line.startswith("Name"):
-                    current["name"] = line.split(":", 1)[1].strip()
-                elif line.startswith("Date"):
-                    current["date"] = line.split(":", 1)[1].strip()
-                elif line.startswith("Venue"):
-                    current["venue"] = line.split(":", 1)[1].strip()
-                elif line.startswith("Instructor"):
-                    current["instructor"] = line.split(":", 1)[1].strip()
-                elif line.startswith("Department"):
-                    current["department"] = line.split(":", 1)[1].strip()
-                elif line.startswith("Capacity"):
-                    current["capacity"] = int(line.split(":", 1)[1].strip())
-                elif line.startswith("Enrolled"):
-                    current["enrolled"] = int(line.split(":", 1)[1].strip())
-                elif line.startswith("Fee"):
-                    current["fee"] = float(line.split(":", 1)[1].strip())
-                elif line.startswith("Status"):
-                    current["status"] = line.split(":", 1)[1].strip()
-                elif line.startswith("---"):
-                    if len(current) > 0:
-                        workshop.workshops.append(current)
-                        current = {}
-
+            with open("workshop_data.txt", "rb") as f:
+                workshop.workshops = pickle.load(f)
+                user.users = pickle.load(f)
             print("Workshops loaded:", len(workshop.workshops))
-        except FileNotFoundError:
-            print("No saved workshops found. Starting fresh.")
-
-        try:
-            file2 = open("participants.txt", "r")
-            lines = file2.readlines()
-            file2.close()
-
-            current = {}
-            for line in lines:
-                line = line.strip()
-                if line.startswith("Participant ID"):
-                    current["id"] = line.split(":", 1)[1].strip()
-                elif line.startswith("Name"):
-                    current["name"] = line.split(":", 1)[1].strip()
-                elif line.startswith("Email"):
-                    current["email"] = line.split(":", 1)[1].strip()
-                elif line.startswith("Roll No"):
-                    current["roll_no"] = line.split(":", 1)[1].strip()
-                elif line.startswith("Department"):
-                    current["department"] = line.split(":", 1)[1].strip()
-                elif line.startswith("Workshop"):
-                    current["workshop"] = line.split(":", 1)[1].strip()
-                elif line.startswith("Payment"):
-                    current["payment"] = line.split(":", 1)[1].strip()
-                elif line.startswith("Attendance"):
-                    current["attendance"] = line.split(":", 1)[1].strip()
-                elif line.startswith("Status"):
-                    current["status"] = line.split(":", 1)[1].strip()
-                elif line.startswith("Grade"):
-                    current["grade"] = line.split(":", 1)[1].strip()
-                elif line.startswith("Result"):
-                    current["result"] = line.split(":", 1)[1].strip()
-                elif line.startswith("Certificate"):
-                    current["certificate"] = line.split(":", 1)[1].strip()
-                elif line.startswith("---"):
-                    if len(current) > 0:
-                        current["score"] = None
-                        user.users.append(current)
-                        current = {}
-
             print("Participants loaded:", len(user.users))
-        except FileNotFoundError:
-            print("No saved participants found. Starting fresh.")
+        except (pickle.UnpicklingError, EOFError):
+            print("Saved data file is corrupted. Starting fresh.")
 
 
 class Report:
@@ -561,13 +472,13 @@ class Report:
             completed = 0
             cancelled = 0
             for w in workshop.workshops:
-                if w["status"] == "Upcoming":
+                if w.status == "Upcoming":
                     upcoming += 1
-                elif w["status"] == "Ongoing":
+                elif w.status == "Ongoing":
                     ongoing += 1
-                elif w["status"] == "Completed":
+                elif w.status == "Completed":
                     completed += 1
-                elif w["status"] == "Cancelled":
+                elif w.status == "Cancelled":
                     cancelled += 1
             print("\nWorkshop Status:")
             print("Upcoming :", upcoming)
@@ -583,17 +494,17 @@ class Report:
             passed = 0
             failed = 0
             for p in user.users:
-                if p["status"] == "Registered":
+                if p.status == "Registered":
                     registered += 1
-                elif p["status"] == "Cancelled":
+                elif p.status == "Cancelled":
                     cancelled += 1
-                if p["payment"] == "Paid":
+                if p.payment == "Paid":
                     paid += 1
-                if p["attendance"] == "Present":
+                if p.attendance == "Present":
                     present += 1
-                if p["result"] == "Pass":
+                if p.result == "Pass":
                     passed += 1
-                elif p["result"] == "Fail":
+                elif p.result == "Fail":
                     failed += 1
             print("\nParticipant Status:")
             print("Registered:", registered)
