@@ -154,7 +154,3 @@ Opening that file directly just shows raw binary data, not a formatted table. Th
 **JEET MAKHIJA**
 
 ---
-
-## License
-
-This project is open source under the [MIT License](LICENSE).
